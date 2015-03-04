@@ -5,8 +5,6 @@
     Licensed unter LGPL v3
  */
 
-namespace HaaseIT;
-
 class DBTools
 {
 
