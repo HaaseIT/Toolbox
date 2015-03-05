@@ -5,6 +5,8 @@
     Licensed unter LGPL v3
  */
 
+namespace HaaseIT;
+
 class Tools
 {
     public static $bEnableDebug = false;
