@@ -2,6 +2,7 @@
 
 /*
     Haase IT - Toolbox
+    Copyright (C) 2014 - 2015  Marcus Haase - mail@marcus.haase.name
     Licensed unter LGPL v3
  */
 
