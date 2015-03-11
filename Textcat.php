@@ -15,9 +15,10 @@ class Textcat
         self::$DB = $DB;
         self::$sLang = $sLang;
         self::$sDefaultlang = $sDefaultlang;
+        self::loadTextcats();
     }
 
-    public static function loadTextcats()
+    protected static function loadTextcats()
     {
         $sQ = "SELECT * FROM textcat_base LEFT JOIN textcat_lang ON textcat_base.tc_id = textcat_lang.tcl_tcid && tcl_lang = :lang";
         $hResult = self::$DB->prepare($sQ);
