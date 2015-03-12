@@ -140,7 +140,7 @@ class Textcat
      * @param $sKey
      * @return array
      */
-    public static function verifyAddTextKey($sKey) { // TODO: allow only alphanumerics and _  ^[a-zA-Z0-9_]*$
+    public static function verifyAddTextKey($sKey) {
         $aErr = array();
         if (\strlen($sKey) < 3) {
             $aErr["keytooshort"] = true;
