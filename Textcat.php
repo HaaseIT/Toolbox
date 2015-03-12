@@ -10,21 +10,18 @@ namespace HaaseIT;
 
 class Textcat
 {
-    protected static $T, $sLang, $sDefaultlang, $DB, $bSingleMode;
+    protected static $T, $sLang, $sDefaultlang, $DB;
 
     /**
      * @param $DB
      * @param $sLang
      * @param $sDefaultlang
      */
-    public static function init($DB, $sLang, $sDefaultlang, $bSingleMode = false) {
+    public static function init($DB, $sLang, $sDefaultlang) {
         self::$DB = $DB;
         self::$sLang = $sLang;
         self::$sDefaultlang = $sDefaultlang;
-        self::$bSingleMode = $bSingleMode;
-        if (!$bSingleMode) {
-            self::loadTextcats();
-        }
+        self::loadTextcats();
     }
 
     /**
@@ -37,7 +34,7 @@ class Textcat
         $hResult = self::$DB->prepare($sQ);
         $hResult->bindValue(':lang', self::$sLang, \PDO::PARAM_STR);
         $hResult->execute();
-        while ($aRow = $hResult->fetch()) {
+        while ($aRow = $hResult->fetch(\PDO::FETCH_ASSOC)) {
             $aTextcat[self::$sLang][$aRow["tc_key"]] = $aRow;
         }
 
@@ -45,7 +42,7 @@ class Textcat
             $hResult = self::$DB->prepare($sQ);
             $hResult->bindValue(':lang', self::$sDefaultlang, \PDO::PARAM_STR);
             $hResult->execute();
-            while ($aRow = $hResult->fetch()) $aTextcat[self::$sDefaultlang][$aRow["tc_key"]] = $aRow;
+            while ($aRow = $hResult->fetch(\PDO::FETCH_ASSOC)) $aTextcat[self::$sDefaultlang][$aRow["tc_key"]] = $aRow;
         }
 
         if (isset($aTextcat)) {
@@ -65,7 +62,7 @@ class Textcat
         $hResult->bindValue(':lang', self::$sLang);
         $hResult->execute();
 
-        return $hResult->fetch();
+        return $hResult->fetch(\PDO::FETCH_ASSOC);
     }
 
     /**
@@ -75,7 +72,6 @@ class Textcat
      */
     public static function T($sTextkey, $bReturnFalseIfNotAvailable = false)
     {
-        // TODO: make fit for single mode
         if (isset($_GET["showtextkeys"])) {
             $sH = '['.$sTextkey.']';
         } else {
@@ -140,5 +136,42 @@ class Textcat
         $hResult->execute();
     }
 
-    // TODO: implement add text key
+    /**
+     * @param $sKey
+     * @return array
+     */
+    public static function verifyAddTextKey($sKey) { // TODO: allow only alphanumerics and _  ^[a-zA-Z0-9_]*$
+        $aErr = array();
+        if (\strlen($sKey) < 3) {
+            $aErr["keytooshort"] = true;
+        } elseif (\strlen($sKey) > 64) {
+            $aErr["keytoolong"] = true;
+        } elseif (\preg_match("/^[a-zA-Z0-9_]*$/", $sKey) != 1) {
+            $aErr["invalidcharacter"] = true;
+        }
+        if (\count($aErr) == 0) {
+            $sQ = "SELECT tc_key FROM textcat_base WHERE tc_key = :key";
+            $hResult = self::$DB->prepare($sQ);
+            $hResult->bindValue(':key', $sKey);
+            $hResult->execute();
+            $iRows = $hResult->rowCount();
+            if ($iRows > 0) $aErr["keyalreadyexists"] = true;
+        }
+
+        return $aErr;
+    }
+
+    /**
+     * @param $sKey
+     * @return mixed
+     */
+    public static function addTextKey($sKey) {
+        $aData = array('tc_key' => \trim(\HaaseIT\Tools::cED($sKey)),);
+        $sQ = \HaaseIT\DBTools::buildInsertQuery($aData, 'textcat_base');
+        //HaaseIT\Tools::debug($sQ);
+        self::$DB->exec($sQ);
+        $iId = self::$DB->lastInsertId();
+
+        return $iId;
+    }
 }
