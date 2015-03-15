@@ -12,6 +12,14 @@ class Tools
 {
     public static $bEnableDebug = false;
     public static $sDebug = '';
+
+    /**
+     * @param $mixed
+     * @param string $sLabel
+     * @param bool $bDontAccumulate
+     * @param bool $bOverrideDisabledDebug
+     * @return bool|string
+     */
     public static function debug($mixed, $sLabel = '', $bDontAccumulate = false, $bOverrideDisabledDebug = false) {
         if (self::$bEnableDebug || $bOverrideDisabledDebug) {
             $sDebug = '<pre class="debug">';
@@ -33,6 +41,10 @@ class Tools
         }
     }
 
+    /**
+     * @param int $length
+     * @return string
+     */
     public static function generateRandomString($length = 10)
     {
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -43,6 +55,13 @@ class Tools
         return $randomString;
     }
 
+    /**
+     * @param $sHRef
+     * @param array $aGetvarstoadd
+     * @param bool $bUseGetVarsFromSuppliedHRef
+     * @param bool $bMakeAmpersandHTMLEntity
+     * @return string
+     */
     public static function makeLinkHRefWithAddedGetVars($sHRef, $aGetvarstoadd = array(), $bUseGetVarsFromSuppliedHRef = false, $bMakeAmpersandHTMLEntity = true)
     {
         if ($bUseGetVarsFromSuppliedHRef) {
@@ -113,6 +132,12 @@ class Tools
         return $sH;
     }
 
+    /**
+     * @param $sImage
+     * @param $iBoxWidth
+     * @param $iBoxHeight
+     * @return array
+     */
     public static function calculateImagesizeToBox($sImage, $iBoxWidth, $iBoxHeight)
     {
         $aImagedata = \GetImageSize($sImage);
@@ -152,6 +177,14 @@ class Tools
         return $aData;
     }
 
+    /**
+     * @param $sImage
+     * @param $sNewimage
+     * @param $iNewwidth
+     * @param $iNewheight
+     * @param int $sJPGquality
+     * @return bool
+     */
     public static function resizeImage($sImage, $sNewimage, $iNewwidth, $iNewheight, $sJPGquality = 75)
     {
         $aImagedata = \GetImageSize($sImage);
@@ -182,6 +215,10 @@ class Tools
         return \file_exists($sNewimage);
     }
 
+    /**
+     * @param $sDate
+     * @return string
+     */
     public static function dateAddLeadingZero($sDate)
     {
         switch ($sDate) {
@@ -219,12 +256,21 @@ class Tools
         return $sDate;
     }
 
+    /**
+     * @param $sEmail
+     * @return bool
+     */
     public static function validateEmail($sEmail)
     {
-        if (\preg_match('/^[^@]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$/', $sEmail)) return true;
-        else return false;
+        return \preg_match('/^[^@]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$/', $sEmail) ? true : false;
     }
 
+    /**
+     * @param $needle
+     * @param $haystack
+     * @param array $nodes
+     * @return array
+     */
     public static function array_search_recursive($needle, $haystack, $nodes = array())
     {
         foreach ($haystack as $key1 => $value1) {
@@ -237,6 +283,11 @@ class Tools
         return $nodes;
     }
 
+    /**
+     * @param $sString
+     * @param bool $bKeepAT
+     * @return mixed
+     */
     public static function cED($sString, $bKeepAT = false)
     { // Cleanup External Data
         $sString = \str_replace("'", "&#39;", $sString);
@@ -247,6 +298,11 @@ class Tools
         return $sString;
     }
 
+    /**
+     * @param $aInput
+     * @param bool $bKeepAT
+     * @return array
+     */
     public static function cEDA($aInput, $bKeepAT = false)
     { // Cleanup External Data Array (one-dimensional)
         $aOutput = array();
@@ -259,6 +315,11 @@ class Tools
         return $aOutput;
     }
 
+    /**
+     * @param $string
+     * @param string $length
+     * @return string
+     */
     public static function cutString($string, $length = "35")
     {
         if (\mb_strlen($string) > $length + 3) {
@@ -268,33 +329,44 @@ class Tools
         return $string;
     }
 
+    /**
+     * @param $sString
+     * @param $iLength
+     * @return string
+     */
     public static function cutStringend($sString, $iLength)
     {
         return \mb_substr($sString, 0, \mb_strlen($sString) - $iLength);
     }
 
+    /**
+     * @param $sKey
+     * @param $sBoxvalue
+     * @return bool
+     */
     public static function getCheckbox($sKey, $sBoxvalue)
     {
-        if (isset($_REQUEST[$sKey]) && $_REQUEST[$sKey] == $sBoxvalue) {
-            return true;
-        } else {
-            return false;
-        }
+        return isset($_REQUEST[$sKey]) && $_REQUEST[$sKey] == $sBoxvalue ? true : false;
     }
 
     // Verify: ist das Beispiel im folgenden Kommentar noch korrekt? Da jetzt auf !== false geprüft wird
     // Beispiel: $FORM->makeCheckbox('fil_status[A]', 'A', getCheckboxaval('fil_status', 'A'))
     // das array muss benannte schlüssel haben da sonst der erste (0) wie false behandelt wird!
+    /**
+     * @param $sKey
+     * @param $sBoxvalue
+     * @return bool
+     */
     public static function getCheckboxaval($sKey, $sBoxvalue)
     {
-        if (isset($_REQUEST[$sKey]) && \array_search($sBoxvalue, $_REQUEST[$sKey]) !== false) {
-            return true;
-        } else {
-            return false;
-        }
+        return isset($_REQUEST[$sKey]) && \array_search($sBoxvalue, $_REQUEST[$sKey]) !== false ? true : false;
     }
 
     // Expects list of options, one option per line
+    /**
+     * @param $sString
+     * @return array
+     */
     public static function makeOptionsArrayFromString($sString)
     {
         $sString = \str_replace("\r", "", $sString);
@@ -302,6 +374,11 @@ class Tools
         return $aOptions;
     }
 
+    /**
+     * @param $aOptions
+     * @param $sSelected
+     * @return mixed
+     */
     public static function getOptionname($aOptions, $sSelected)
     {
         foreach ($aOptions as $sValue) {
@@ -312,6 +389,12 @@ class Tools
         }
     }
 
+    /**
+     * @param $sKey
+     * @param string $sDefault
+     * @param bool $bEmptyisvalid
+     * @return string
+     */
     public static function getFormfield($sKey, $sDefault = '', $bEmptyisvalid = false)
     {
         if (isset($_REQUEST[$sKey])) {
@@ -328,6 +411,13 @@ class Tools
     }
 
     protected static $COUNTER_makeListtable;
+
+    /**
+     * @param $aC
+     * @param $aData
+     * @param $twig
+     * @return mixed
+     */
     public static function makeListtable($aC, $aData, $twig)
     {
         // v 1.5
