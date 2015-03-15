@@ -11,6 +11,12 @@ namespace HaaseIT;
 class DBTools
 {
 
+    /**
+     * @param $aData
+     * @param $sTable
+     * @param bool $bKeepAT
+     * @return string
+     */
     public static function buildInsertQuery($aData, $sTable, $bKeepAT = false)
     {
         $sFields = '';
@@ -24,6 +30,11 @@ class DBTools
         return $sQ;
     }
 
+    /**
+     * @param $aData
+     * @param $sTable
+     * @return string
+     */
     public static function buildPSInsertQuery($aData, $sTable)
     {
         $sFields = '';
@@ -36,6 +47,14 @@ class DBTools
         return $sQ;
     }
 
+    /**
+     * @param $aData
+     * @param $sTable
+     * @param string $sPKey
+     * @param string $sPValue
+     * @param bool $bKeepAT
+     * @return string
+     */
     public static function buildUpdateQuery($aData, $sTable, $sPKey = '', $sPValue = '', $bKeepAT = false)
     {
         $sQ = "UPDATE " . $sTable . " SET ";
@@ -51,6 +70,12 @@ class DBTools
         return $sQ;
     }
 
+    /**
+     * @param $aData
+     * @param $sTable
+     * @param string $sPKey
+     * @return string
+     */
     public static function buildPSUpdateQuery($aData, $sTable, $sPKey = '')
     {
         $sQ = "UPDATE " . $sTable . " SET ";
