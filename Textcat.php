@@ -174,4 +174,16 @@ class Textcat
 
         return $iId;
     }
+
+    public static function deleteText($iID) {
+        // delete children
+        $sQ = "DELETE FROM textcat_lang WHERE tcl_tcid = '".\HaaseIT\Tools::cED($iID)."'";
+        self::$DB->exec($sQ);
+
+        // then delete base row
+        $sQ = "DELETE FROM textcat_base WHERE tc_id = '".\HaaseIT\Tools::cED($iID)."'";
+        self::$DB->exec($sQ);
+
+        return true;
+    }
 }
