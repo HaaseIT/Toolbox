@@ -257,15 +257,6 @@ class Tools
     }
 
     /**
-     * @param $sEmail
-     * @return bool
-     */
-    public static function validateEmail($sEmail)
-    {
-        return \preg_match('/^[^@]+@[a-zA-Z0-9._-]+\.[a-zA-Z]+$/', $sEmail) ? true : false;
-    }
-
-    /**
      * @param $needle
      * @param $haystack
      * @param array $nodes
