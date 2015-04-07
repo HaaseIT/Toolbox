@@ -1,5 +1,5 @@
 1.2.3
-Tools: The function validateEmail($sEmail) has been removed. Please use the php function
+Tools: The functions validateEmail($sEmail), cED() and cEDA() have been removed. Please use the php function
   filter_var($sEmail, FILTER_VALIDATE_EMAIL) instead.
 
 1.2.2
