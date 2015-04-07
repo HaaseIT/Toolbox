@@ -275,38 +275,6 @@ class Tools
     }
 
     /**
-     * @param $sString
-     * @param bool $bKeepAT
-     * @return mixed
-     */
-    public static function cED($sString, $bKeepAT = false)
-    { // Cleanup External Data
-        $sString = \str_replace("'", "&#39;", $sString);
-        //$sString = str_replace('"', "&#34;", $sString);
-        if (!$bKeepAT) {
-            $sString = \str_replace("@", "&#064;", $sString);
-        }
-        return $sString;
-    }
-
-    /**
-     * @param $aInput
-     * @param bool $bKeepAT
-     * @return array
-     */
-    public static function cEDA($aInput, $bKeepAT = false)
-    { // Cleanup External Data Array (one-dimensional)
-        $aOutput = array();
-        foreach ($aInput as $sKey => $sValue) {
-            $aOutput[$sKey] = \str_replace("'", "&#39;", $sValue);
-            if (!$bKeepAT) {
-                $aOutput[$sKey] = \str_replace("@", "&#064;", $sValue);
-            }
-        }
-        return $aOutput;
-    }
-
-    /**
      * @param $string
      * @param string $length
      * @return string
