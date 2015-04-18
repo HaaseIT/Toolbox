@@ -166,7 +166,7 @@ class Textcat
      * @return mixed
      */
     public static function addTextKey($sKey) {
-        $aData = array('tc_key' => \trim(\HaaseIT\Tools::cED($sKey)),);
+        $aData = array('tc_key' => \trim(\filter_var($sKey, FILTER_SANITIZE_SPECIAL_CHARS)),);
         $sQ = \HaaseIT\DBTools::buildInsertQuery($aData, 'textcat_base');
         //HaaseIT\Tools::debug($sQ);
         self::$DB->exec($sQ);
@@ -177,11 +177,11 @@ class Textcat
 
     public static function deleteText($iID) {
         // delete children
-        $sQ = "DELETE FROM textcat_lang WHERE tcl_tcid = '".\HaaseIT\Tools::cED($iID)."'";
+        $sQ = "DELETE FROM textcat_lang WHERE tcl_tcid = '".\filter_var($iID, FILTER_SANITIZE_NUMBER_INT)."'";
         self::$DB->exec($sQ);
 
         // then delete base row
-        $sQ = "DELETE FROM textcat_base WHERE tc_id = '".\HaaseIT\Tools::cED($iID)."'";
+        $sQ = "DELETE FROM textcat_base WHERE tc_id = '".\filter_var($iID, FILTER_SANITIZE_NUMBER_INT)."'";
         self::$DB->exec($sQ);
 
         return true;
