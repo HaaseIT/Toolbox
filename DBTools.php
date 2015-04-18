@@ -17,13 +17,13 @@ class DBTools
      * @param bool $bKeepAT
      * @return string
      */
-    public static function buildInsertQuery($aData, $sTable, $bKeepAT = false)
+    public static function buildInsertQuery($aData, $sTable)
     {
         $sFields = '';
         $sValues = '';
         foreach ($aData as $sKey => $sValue) {
             $sFields .= $sKey . ", ";
-            $sValues .= "'" . Tools::cED($sValue, $bKeepAT) . "', ";
+            $sValues .= "'".\filter_var($sValue, FILTER_SANITIZE_MAGIC_QUOTES) . "', ";
         }
         $sQ = "INSERT INTO " . $sTable . " (" . Tools::cutStringend($sFields, 2) . ") ";
         $sQ .= "VALUES (" . Tools::cutStringend($sValues, 2) . ")";
@@ -59,13 +59,13 @@ class DBTools
     {
         $sQ = "UPDATE " . $sTable . " SET ";
         foreach ($aData as $sKey => $sValue) {
-            $sQ .= $sKey . " = '" . Tools::cED($sValue, $bKeepAT) . "', ";
+            $sQ .= $sKey . " = '" . \filter_var($sValue, FILTER_SANITIZE_MAGIC_QUOTES) . "', ";
         }
         $sQ = Tools::cutStringend($sQ, 2);
         if ($sPKey == '') {
             $sQ .= ' ';
         } else {
-            $sQ .= " WHERE " . $sPKey . " = '" . Tools::cED($sPValue, $bKeepAT) . "'";
+            $sQ .= " WHERE " . $sPKey . " = '" . \filter_var($sPValue, FILTER_SANITIZE_MAGIC_QUOTES) . "'";
         }
         return $sQ;
     }
