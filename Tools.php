@@ -405,6 +405,7 @@ class Tools
         fixed: if more than 1 linked colum is defined, all colums used the 'lgetvars' of the last colum
 
         Relevant CSS Data:
+        .listtable{width:100%}
         .listtable-head{font-weight:700;padding:1px}
         .listtable-data{text-align:left;padding:1px}
         .listtable tr:nth-child(even){background-color:#eaeaea;}
@@ -423,8 +424,8 @@ class Tools
         'width' => 150,
         'linked' => false,
         'escapehtmlspecialchars' => false,
-        'style-data' => 'text-align: center;',
-        'style-head' => 'text-align: center;',
+        'styledata' => 'text-align: center;',
+        'stylehead' => 'text-align: center;',
         ),
         array(
         'title' => 'löschen',
