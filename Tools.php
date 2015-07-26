@@ -360,7 +360,7 @@ class Tools
             if ($bEmptyisvalid && $_REQUEST[$sKey] == '') {
                 return '';
             } elseif ($_REQUEST[$sKey] != '') {
-                return $_REQUEST[$sKey];
+                return htmlentities($_REQUEST[$sKey]);
             } else {
                 return $sDefault;
             }
