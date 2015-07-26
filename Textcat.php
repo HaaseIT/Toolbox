@@ -11,6 +11,7 @@ namespace HaaseIT;
 class Textcat
 {
     protected static $T, $sLang, $sDefaultlang, $DB;
+    public static $purifier;
 
     /**
      * @param $DB
@@ -19,8 +20,8 @@ class Textcat
      */
     public static function init($DB, $sLang, $sDefaultlang) {
         self::$DB = $DB;
-        self::$sLang = $sLang;
-        self::$sDefaultlang = $sDefaultlang;
+        self::$sLang = \filter_var($sLang, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+        self::$sDefaultlang = \filter_var($sDefaultlang, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
         self::loadTextcats();
     }
 
@@ -58,7 +59,7 @@ class Textcat
         $sQ = "SELECT * FROM textcat_base LEFT JOIN textcat_lang ON textcat_base.tc_id = textcat_lang.tcl_tcid ";
         $sQ .= "&& tcl_lang = :lang WHERE tc_id = :id";
         $hResult = self::$DB->prepare($sQ);
-        $hResult->bindValue(':id', $iID);
+        $hResult->bindValue(':id', \filter_var($iID, FILTER_SANITIZE_NUMBER_INT));
         $hResult->bindValue(':lang', self::$sLang);
         $hResult->execute();
 
@@ -72,6 +73,7 @@ class Textcat
      */
     public static function T($sTextkey, $bReturnFalseIfNotAvailable = false)
     {
+        $sTextkey = \filter_var($sTextkey, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
         if (isset($_GET["showtextkeys"])) {
             $sH = '['.$sTextkey.']';
         } else {
@@ -103,6 +105,7 @@ class Textcat
         // Check if this textkey already has a child in the language table, if not, insert one
         $sQ = "SELECT * FROM textcat_lang WHERE tcl_tcid = :id AND tcl_lang = :lang";
         $hResult = self::$DB->prepare($sQ);
+        $iID = \filter_var($iID, FILTER_SANITIZE_NUMBER_INT);
         $hResult->bindValue(':id', $iID);
         $hResult->bindValue(':lang', self::$sLang);
         $hResult->execute();
@@ -125,8 +128,11 @@ class Textcat
      * @param $sText
      */
     public static function saveText($iLID, $sText) {
+        if (self::$purifier != NULL) {
+            $sText = self::$purifier->purify($sText);
+        }
         $aData = array(
-            'tcl_id' => $iLID,
+            'tcl_id' => \filter_var($iLID, FILTER_SANITIZE_NUMBER_INT),
             'tcl_text' => $sText,
         );
         $sQ = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'textcat_lang', 'tcl_id');
@@ -142,6 +148,7 @@ class Textcat
      */
     public static function verifyAddTextKey($sKey) {
         $aErr = array();
+        $sKey = \filter_var(trim($sKey), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
         if (\strlen($sKey) < 3) {
             $aErr["keytooshort"] = true;
         } elseif (\strlen($sKey) > 64) {
@@ -166,7 +173,7 @@ class Textcat
      * @return mixed
      */
     public static function addTextKey($sKey) {
-        $aData = array('tc_key' => \trim(\filter_var($sKey, FILTER_SANITIZE_SPECIAL_CHARS)),);
+        $aData = array('tc_key' => \trim(\filter_var($sKey, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),);
         $sQ = \HaaseIT\DBTools::buildInsertQuery($aData, 'textcat_base');
         //HaaseIT\Tools::debug($sQ);
         self::$DB->exec($sQ);
