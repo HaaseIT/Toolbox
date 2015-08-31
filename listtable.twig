@@ -29,7 +29,7 @@
                 {% for value in C %}
                     <td class="listtable-data" valign="top"{{ value.styledata != '' ? ' style="'~value.styledata~'"' : '' }}>
                         {% if value.linked %}
-                            {% if value.ltarget == '' and value.lkeyname = '' %}
+                            {% if value.ltarget == '' and value.lkeyname == '' %}
                                 <a href="{{ row[value.key] }}>{{ value.title }}</a>
                             {% else %}
                                 <a href="{{ value.ltarget }}?{{ value.lkeyname }}={{ row[value.key]
