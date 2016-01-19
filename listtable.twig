@@ -29,10 +29,14 @@
                 {% for value in C %}
                     <td class="listtable-data" valign="top"{{ value.styledata != '' ? ' style="'~value.styledata~'"' : '' }}>
                         {% if value.linked %}
-                            <a href="{{ value.ltarget }}?{{ value.lkeyname }}={{ row[value.key]
-                            }}{% if value.lgetvars|length > 0 %}{% for lkey, lvalue in value.lgetvars %}&amp;{{ lkey
-                             }}={{ lvalue }}{% endfor %}{% endif %}" {{ value.levents != '' ? value.levents : '' }}>
-                                {{ value.title }}</a>
+                            {% if value.ltarget == '' and value.lkeyname == '' %}
+                                <a href="{{ row[value.key] }}">{{ value.title }}</a>
+                            {% else %}
+                                <a href="{{ value.ltarget }}?{{ value.lkeyname }}={{ row[value.key]
+                                }}{% if value.lgetvars|length > 0 %}{% for lkey, lvalue in value.lgetvars %}&amp;{{ lkey
+                                }}={{ lvalue }}{% endfor %}{% endif %}" {{ value.levents != '' ? value.levents : '' }}>
+                                    {{ value.title }}</a>
+                            {% endif %}
                         {% else %}
                             {% if value.escapehtmlspecialchars %}
                                 {% autoescape %}{{ row[value.key] }}{% endautoescape %}
