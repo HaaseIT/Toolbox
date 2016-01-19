@@ -10,7 +10,7 @@ namespace HaaseIT;
 
 class Textcat
 {
-    protected static $T, $sLang, $sDefaultlang, $DB;
+    protected static $T, $sLang, $sDefaultlang, $DB, $bVerbose = false;
     public static $purifier;
 
     /**
@@ -18,8 +18,9 @@ class Textcat
      * @param $sLang
      * @param $sDefaultlang
      */
-    public static function init($DB, $sLang, $sDefaultlang) {
+    public static function init($DB, $sLang, $sDefaultlang, $bVerbose = false) {
         self::$DB = $DB;
+        self::$bVerbose = $bVerbose;
         self::$sLang = \filter_var($sLang, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
         self::$sDefaultlang = \filter_var($sDefaultlang, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
         self::loadTextcats();
@@ -84,7 +85,7 @@ class Textcat
             }
             if (!isset($sH) || $sH == '') {
                 if ($bReturnFalseIfNotAvailable) return false;
-                else $sH = 'Missing Text: '.$sTextkey;
+                elseif (self::$bVerbose) $sH = 'Missing Text: '.$sTextkey;
             }
         }
 
