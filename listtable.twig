@@ -1,16 +1,18 @@
 {% if C|length > 0 %}
-    <script type="text/javascript">
-        function toggleHighlight(sRowID) {
-            var a = document.getElementById(sRowID);
-            var b = a.className.search(" listtable-marked")
-            var c = " listtable-marked";
-            if (b == -1) {
-                a.className += c;
-            } else {
-                a.className = a.className.replace(c, "");
+    {% if counter_listtable <= 1 %}
+        <script type="text/javascript">
+            function toggleHighlight(sRowID) {
+                var a = document.getElementById(sRowID);
+                var b = a.className.search(" listtable-marked")
+                var c = " listtable-marked";
+                if (b == -1) {
+                    a.className += c;
+                } else {
+                    a.className = a.className.replace(c, "");
+                }
             }
-        }
-    </script>
+        </script>
+    {% endif %}
     <table class="listtable">
         <thead>
         <tr>
