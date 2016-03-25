@@ -10,7 +10,7 @@ namespace HaaseIT;
 
 class Textcat
 {
-    protected static $T, $sLang, $sDefaultlang, $DB, $bVerbose = false;
+    protected static $T, $sLang, $sDefaultlang, $DB, $bVerbose = false, $logdir;
     public static $purifier;
 
     /**
@@ -18,11 +18,12 @@ class Textcat
      * @param $sLang
      * @param $sDefaultlang
      */
-    public static function init($DB, $sLang, $sDefaultlang, $bVerbose = false) {
+    public static function init($DB, $sLang, $sDefaultlang, $bVerbose = false, $logdir = '') {
         self::$DB = $DB;
         self::$bVerbose = $bVerbose;
         self::$sLang = \filter_var($sLang, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
         self::$sDefaultlang = \filter_var($sDefaultlang, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+        self::$logdir = $logdir;
         self::loadTextcats();
     }
 
@@ -84,6 +85,9 @@ class Textcat
                 $sH = \trim(self::$T[self::$sDefaultlang][$sTextkey]["tcl_text"]);
             }
             if (!isset($sH) || $sH == '') {
+                if (self::$logdir != '' && is_dir(self::$logdir) && is_writable(self::$logdir)) {
+                    error_log(date('c').' Missing Text: '.$sTextkey.PHP_EOL, 3, self::$logdir.DIRECTORY_SEPARATOR.'errors_textcats.log');
+                }
                 if ($bReturnFalseIfNotAvailable) return false;
                 elseif (self::$bVerbose) $sH = 'Missing Text: '.$sTextkey;
             }
