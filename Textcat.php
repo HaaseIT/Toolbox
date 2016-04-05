@@ -75,6 +75,7 @@ class Textcat
      */
     public static function T($sTextkey, $bReturnFalseIfNotAvailable = false)
     {
+        $sH = '';
         $sTextkey = \filter_var($sTextkey, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
         if (isset($_GET["showtextkeys"])) {
             $sH = '['.$sTextkey.']';
