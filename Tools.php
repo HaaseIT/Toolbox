@@ -432,7 +432,7 @@ class Tools
         'key' => 'vk_wv_nummer',
         'width' => 60,
         'linked' => true,
-        'ltarget' => $_SERVER["PHP_SELF"],
+        'ltarget' => '/link/target.php',
         'lkeyname' => 'id',
         'lgetvars' => array(
         'action' => 'delete',
