@@ -25,9 +25,9 @@ class DBTools
             $sFields .= $sKey . ", ";
             $sValues .= "'".\filter_var($sValue, FILTER_SANITIZE_MAGIC_QUOTES) . "', ";
         }
-        $sQ = "INSERT INTO " . $sTable . " (" . Tools::cutStringend($sFields, 2) . ") ";
-        $sQ .= "VALUES (" . Tools::cutStringend($sValues, 2) . ")";
-        return $sQ;
+        $sql = "INSERT INTO " . $sTable . " (" . Tools::cutStringend($sFields, 2) . ") ";
+        $sql .= "VALUES (" . Tools::cutStringend($sValues, 2) . ")";
+        return $sql;
     }
 
     /**
@@ -43,8 +43,7 @@ class DBTools
             $sFields .= $sKey . ', ';
             $sValues .= ":" . $sKey . ", ";
         }
-        $sQ = "INSERT INTO " . $sTable . " (" . Tools::cutStringend($sFields, 2) . ") VALUES (" . Tools::cutStringend($sValues, 2) . ")";
-        return $sQ;
+        return "INSERT INTO " . $sTable . " (" . Tools::cutStringend($sFields, 2) . ") VALUES (" . Tools::cutStringend($sValues, 2) . ")";
     }
 
     /**
@@ -57,17 +56,17 @@ class DBTools
      */
     public static function buildUpdateQuery($aData, $sTable, $sPKey = '', $sPValue = '', $bKeepAT = false)
     {
-        $sQ = "UPDATE " . $sTable . " SET ";
+        $sql = "UPDATE " . $sTable . " SET ";
         foreach ($aData as $sKey => $sValue) {
-            $sQ .= $sKey . " = '" . \filter_var($sValue, FILTER_SANITIZE_MAGIC_QUOTES) . "', ";
+            $sql .= $sKey . " = '" . \filter_var($sValue, FILTER_SANITIZE_MAGIC_QUOTES) . "', ";
         }
-        $sQ = Tools::cutStringend($sQ, 2);
+        $sql = Tools::cutStringend($sql, 2);
         if ($sPKey == '') {
-            $sQ .= ' ';
+            $sql .= ' ';
         } else {
-            $sQ .= " WHERE " . $sPKey . " = '" . \filter_var($sPValue, FILTER_SANITIZE_MAGIC_QUOTES) . "'";
+            $sql .= " WHERE " . $sPKey . " = '" . \filter_var($sPValue, FILTER_SANITIZE_MAGIC_QUOTES) . "'";
         }
-        return $sQ;
+        return $sql;
     }
 
     /**
@@ -78,19 +77,19 @@ class DBTools
      */
     public static function buildPSUpdateQuery($aData, $sTable, $sPKey = '')
     {
-        $sQ = "UPDATE " . $sTable . " SET ";
+        $sql = "UPDATE " . $sTable . " SET ";
         foreach ($aData as $sKey => $sValue) {
             if ($sPKey != '' && $sKey == $sPKey) {
                 continue;
             }
-            $sQ .= $sKey . " = :" . $sKey . ", ";
+            $sql .= $sKey . " = :" . $sKey . ", ";
         }
-        $sQ = Tools::cutStringend($sQ, 2);
+        $sql = Tools::cutStringend($sql, 2);
         if ($sPKey == '') {
-            $sQ .= ' ';
+            $sql .= ' ';
         } else {
-            $sQ .= " WHERE " . $sPKey . " = :" . $sPKey;
+            $sql .= " WHERE " . $sPKey . " = :" . $sPKey;
         }
-        return $sQ;
+        return $sql;
     }
 }

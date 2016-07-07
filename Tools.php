@@ -74,21 +74,21 @@ class Tools
                     $aGetvars[$aGetvarsraw[0]] = $aGetvarsraw[1];
                 }
             }
-            $sH = '';
+            $return = '';
             if (isset($aHRef["scheme"])) {
-                $sH .= $aHRef["scheme"] . '://';
+                $return .= $aHRef["scheme"] . '://';
             }
             if (isset($aHRef["host"])) {
-                $sH .= $aHRef["host"];
+                $return .= $aHRef["host"];
             }
             if (isset($aHRef["user"])) {
-                $sH .= $aHRef["user"];
+                $return .= $aHRef["user"];
             }
             if (isset($aHRef["path"])) {
-                $sH .= $aHRef["path"];
+                $return .= $aHRef["path"];
             }
         } else {
-            $sH = $sHRef;
+            $return = $sHRef;
             if (isset($_GET) && \count($_GET)) {
                 $aGetvars = $_GET;
             }
@@ -98,16 +98,16 @@ class Tools
         if (count($aGetvarstoadd)) {
             foreach ($aGetvarstoadd as $sKey => $sValue) {
                 if ($bFirstGetVar) {
-                    $sH .= '?';
+                    $return .= '?';
                     $bFirstGetVar = false;
                 } else {
                     if ($bMakeAmpersandHTMLEntity) {
-                        $sH .= '&amp;';
+                        $return .= '&amp;';
                     } else {
-                        $sH .= '&';
+                        $return .= '&';
                     }
                 }
-                $sH .= $sKey . '=' . $sValue;
+                $return .= $sKey . '=' . $sValue;
             }
         }
         if (isset($aGetvars) && \count($aGetvars)) {
@@ -116,20 +116,20 @@ class Tools
                     continue;
                 }
                 if ($bFirstGetVar) {
-                    $sH .= '?';
+                    $return .= '?';
                     $bFirstGetVar = false;
                 } else {
                     if ($bMakeAmpersandHTMLEntity) {
-                        $sH .= '&amp;';
+                        $return .= '&amp;';
                     } else {
-                        $sH .= '&';
+                        $return .= '&';
                     }
                 }
-                $sH .= $sKey . '=' . $sValue;
+                $return .= $sKey . '=' . $sValue;
             }
         }
 
-        return $sH;
+        return $return;
     }
 
     /**
