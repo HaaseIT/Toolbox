@@ -91,9 +91,9 @@ class Textcat
         if (isset($_GET["showtextkeys"])) {
             $return = '['.$sTextkey.']';
         } else {
-            if (isset($this->T[$this->sLang][$sTextkey]["tcl_text"]) && \trim($this->T[$this->sLang][$sTextkey]["tcl_text"]) != '') {
+            if (!empty($this->T[$this->sLang][$sTextkey]["tcl_text"]) && \trim($this->T[$this->sLang][$sTextkey]["tcl_text"]) != '') {
                 $return = \trim($this->T[$this->sLang][$sTextkey]["tcl_text"]);
-            } elseif (isset($this->T[$this->sDefaultlang][$sTextkey]["tcl_text"]) && \trim($this->T[$this->sDefaultlang][$sTextkey]["tcl_text"]) != '') {
+            } elseif (!empty($this->T[$this->sDefaultlang][$sTextkey]["tcl_text"]) && \trim($this->T[$this->sDefaultlang][$sTextkey]["tcl_text"]) != '') {
                 $return = \trim($this->T[$this->sDefaultlang][$sTextkey]["tcl_text"]);
             }
             if (!isset($return) || $return == '') {
