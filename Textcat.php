@@ -41,7 +41,7 @@ class Textcat
     /**
      *
      */
-    protected function loadTextcats()
+    public function loadTextcats()
     {
         $sql = "SELECT * FROM textcat_base LEFT JOIN textcat_lang ON textcat_base.tc_id = textcat_lang.tcl_tcid ";
         $sql .= "&& tcl_lang = :lang ORDER BY tc_key";
