@@ -15,8 +15,8 @@ class Textcat
 
     public function __construct($container, $defaultlang, $verbose = false, $logdir = '')
     {
-        $this->sLang = $container['lang'];
-        $this->sDefaultlang = $defaultlang;
+        $this->sLang = \filter_var($container['lang'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+        $this->sDefaultlang = \filter_var($defaultlang, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
         $this->DB = $container['db'];
         $this->bVerbose = $verbose;
         $this->logdir = $logdir;
