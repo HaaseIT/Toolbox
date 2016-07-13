@@ -2,7 +2,7 @@
 
 /*
     Haase IT - Toolbox
-    Copyright (C) 2014 - 2015  Marcus Haase - mail@marcus.haase.name
+    Copyright (C) 2014 - 2016  Marcus Haase - mail@marcus.haase.name
     Licensed unter LGPL v3
  */
 
@@ -10,14 +10,24 @@ namespace HaaseIT;
 
 class Textcat
 {
-    protected static $T, $sLang, $sDefaultlang, $DB, $bVerbose = false, $logdir;
-    public static $purifier;
+    protected $T, $sLang, $sDefaultlang, $DB, $bVerbose, $logdir;
+    public $purifier;
+
+    public function __construct($container, $defaultlang, $verbose = false, $logdir = '')
+    {
+        $this->sLang = $container['lang'];
+        $this->sDefaultlang = $defaultlang;
+        $this->DB = $container['db'];
+        $this->bVerbose = $verbose;
+        $this->logdir = $logdir;
+    }
 
     /**
      * @param $DB
      * @param $sLang
      * @param $sDefaultlang
      */
+    /*
     public static function init($DB, $sLang, $sDefaultlang, $bVerbose = false, $logdir = '') {
         self::$DB = $DB;
         self::$bVerbose = $bVerbose;
@@ -26,30 +36,31 @@ class Textcat
         self::$logdir = $logdir;
         self::loadTextcats();
     }
+    */
 
     /**
      *
      */
-    protected static function loadTextcats()
+    protected function loadTextcats()
     {
         $sql = "SELECT * FROM textcat_base LEFT JOIN textcat_lang ON textcat_base.tc_id = textcat_lang.tcl_tcid ";
         $sql .= "&& tcl_lang = :lang ORDER BY tc_key";
-        $hResult = self::$DB->prepare($sql);
-        $hResult->bindValue(':lang', self::$sLang, \PDO::PARAM_STR);
+        $hResult = $this->DB->prepare($sql);
+        $hResult->bindValue(':lang', $this->sLang, \PDO::PARAM_STR);
         $hResult->execute();
         while ($aRow = $hResult->fetch(\PDO::FETCH_ASSOC)) {
-            $aTextcat[self::$sLang][$aRow["tc_key"]] = $aRow;
+            $aTextcat[$this->sLang][$aRow["tc_key"]] = $aRow;
         }
 
-        if (self::$sLang != self::$sDefaultlang) {
-            $hResult = self::$DB->prepare($sql);
-            $hResult->bindValue(':lang', self::$sDefaultlang, \PDO::PARAM_STR);
+        if ($this->sLang != $this->sDefaultlang) {
+            $hResult = $this->DB->prepare($sql);
+            $hResult->bindValue(':lang', $this->sDefaultlang, \PDO::PARAM_STR);
             $hResult->execute();
-            while ($aRow = $hResult->fetch(\PDO::FETCH_ASSOC)) $aTextcat[self::$sDefaultlang][$aRow["tc_key"]] = $aRow;
+            while ($aRow = $hResult->fetch(\PDO::FETCH_ASSOC)) $aTextcat[$this->sDefaultlang][$aRow["tc_key"]] = $aRow;
         }
 
         if (isset($aTextcat)) {
-            self::$T = $aTextcat;
+            $this->T = $aTextcat;
         }
     }
 
@@ -57,12 +68,12 @@ class Textcat
      * @param $iID
      * @return mixed
      */
-    public static function getSingleTextByID($iID) {
+    public function getSingleTextByID($iID) {
         $sql = "SELECT * FROM textcat_base LEFT JOIN textcat_lang ON textcat_base.tc_id = textcat_lang.tcl_tcid ";
         $sql .= "&& tcl_lang = :lang WHERE tc_id = :id";
-        $hResult = self::$DB->prepare($sql);
+        $hResult = $this->DB->prepare($sql);
         $hResult->bindValue(':id', \filter_var($iID, FILTER_SANITIZE_NUMBER_INT));
-        $hResult->bindValue(':lang', self::$sLang);
+        $hResult->bindValue(':lang', $this->sLang);
         $hResult->execute();
 
         return $hResult->fetch(\PDO::FETCH_ASSOC);
@@ -73,24 +84,24 @@ class Textcat
      * @param bool $bReturnFalseIfNotAvailable
      * @return bool|string
      */
-    public static function T($sTextkey, $bReturnFalseIfNotAvailable = false)
+    public function T($sTextkey, $bReturnFalseIfNotAvailable = false)
     {
         $return = '';
         $sTextkey = \filter_var($sTextkey, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
         if (isset($_GET["showtextkeys"])) {
             $return = '['.$sTextkey.']';
         } else {
-            if (isset(self::$T[self::$sLang][$sTextkey]["tcl_text"]) && \trim(self::$T[self::$sLang][$sTextkey]["tcl_text"]) != '') {
-                $return = \trim(self::$T[self::$sLang][$sTextkey]["tcl_text"]);
-            } elseif (isset(self::$T[self::$sDefaultlang][$sTextkey]["tcl_text"]) && \trim(self::$T[self::$sDefaultlang][$sTextkey]["tcl_text"]) != '') {
-                $return = \trim(self::$T[self::$sDefaultlang][$sTextkey]["tcl_text"]);
+            if (isset($this->T[$this->sLang][$sTextkey]["tcl_text"]) && \trim($this->T[$this->sLang][$sTextkey]["tcl_text"]) != '') {
+                $return = \trim($this->T[$this->sLang][$sTextkey]["tcl_text"]);
+            } elseif (isset($this->T[$this->sDefaultlang][$sTextkey]["tcl_text"]) && \trim($this->T[$this->sDefaultlang][$sTextkey]["tcl_text"]) != '') {
+                $return = \trim($this->T[$this->sDefaultlang][$sTextkey]["tcl_text"]);
             }
             if (!isset($return) || $return == '') {
-                if (self::$logdir != '' && is_dir(self::$logdir) && is_writable(self::$logdir)) {
-                    error_log(date('c').' Missing Text: '.$sTextkey.PHP_EOL, 3, self::$logdir.DIRECTORY_SEPARATOR.'errors_textcats.log');
+                if ($this->logdir != '' && is_dir($this->logdir) && is_writable($this->logdir)) {
+                    error_log(date('c').' Missing Text: '.$sTextkey.PHP_EOL, 3, $this->logdir.DIRECTORY_SEPARATOR.'errors_textcats.log');
                 }
                 if ($bReturnFalseIfNotAvailable) return false;
-                elseif (self::$bVerbose) $return = 'Missing Text: '.$sTextkey;
+                elseif ($this->bVerbose) $return = 'Missing Text: '.$sTextkey;
             }
         }
 
@@ -100,29 +111,29 @@ class Textcat
     /**
      * @return mixed
      */
-    public static function getCompleteTextcatForCurrentLang() {
-        return self::$T[self::$sLang];
+    public function getCompleteTextcatForCurrentLang() {
+        return $this->T[$this->sLang];
     }
 
     /**
      * @param $iID
      */
-    public static function initTextIfVoid($iID) {
+    public function initTextIfVoid($iID) {
         // Check if this textkey already has a child in the language table, if not, insert one
         $sql = "SELECT * FROM textcat_lang WHERE tcl_tcid = :id AND tcl_lang = :lang";
-        $hResult = self::$DB->prepare($sql);
+        $hResult = $this->DB->prepare($sql);
         $iID = \filter_var($iID, FILTER_SANITIZE_NUMBER_INT);
         $hResult->bindValue(':id', $iID);
-        $hResult->bindValue(':lang', self::$sLang);
+        $hResult->bindValue(':lang', $this->sLang);
         $hResult->execute();
 
         if ($hResult->rowCount() == 0) {
             $aData = array(
                 'tcl_tcid' => $iID,
-                'tcl_lang' => self::$sLang
+                'tcl_lang' => $this->sLang
             );
             $sql = \HaaseIT\DBTools::buildPSInsertQuery($aData, 'textcat_lang');
-            $hResult = self::$DB->prepare($sql);
+            $hResult = $this->DB->prepare($sql);
             foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
             $hResult->execute();
         }
@@ -132,16 +143,16 @@ class Textcat
      * @param $iLID
      * @param $sText
      */
-    public static function saveText($iLID, $sText) {
-        if (self::$purifier != NULL) {
-            $sText = self::$purifier->purify($sText);
+    public function saveText($iLID, $sText) {
+        if ($this->purifier != NULL) {
+            $sText = $this->purifier->purify($sText);
         }
         $aData = array(
             'tcl_id' => \filter_var($iLID, FILTER_SANITIZE_NUMBER_INT),
             'tcl_text' => $sText,
         );
         $sql = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'textcat_lang', 'tcl_id');
-        $hResult = self::$DB->prepare($sql);
+        $hResult = $this->DB->prepare($sql);
         foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
         $hResult->execute();
     }
@@ -150,7 +161,7 @@ class Textcat
      * @param $sKey
      * @return array
      */
-    public static function verifyAddTextKey($sKey) {
+    public function verifyAddTextKey($sKey) {
         $aErr = array();
         $sKey = \filter_var(trim($sKey), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
         if (\strlen($sKey) < 3) {
@@ -162,7 +173,7 @@ class Textcat
         }
         if (\count($aErr) == 0) {
             $sql = "SELECT tc_key FROM textcat_base WHERE tc_key = :key";
-            $hResult = self::$DB->prepare($sql);
+            $hResult = $this->DB->prepare($sql);
             $hResult->bindValue(':key', $sKey);
             $hResult->execute();
             $iRows = $hResult->rowCount();
@@ -176,23 +187,23 @@ class Textcat
      * @param $sKey
      * @return mixed
      */
-    public static function addTextKey($sKey) {
+    public function addTextKey($sKey) {
         $aData = array('tc_key' => \trim(\filter_var($sKey, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),);
         $sql = \HaaseIT\DBTools::buildInsertQuery($aData, 'textcat_base');
-        self::$DB->exec($sql);
-        $iId = self::$DB->lastInsertId();
+        $this->DB->exec($sql);
+        $iId = $this->DB->lastInsertId();
 
         return $iId;
     }
 
-    public static function deleteText($iID) {
+    public function deleteText($iID) {
         // delete children
         $sql = "DELETE FROM textcat_lang WHERE tcl_tcid = '".\filter_var($iID, FILTER_SANITIZE_NUMBER_INT)."'";
-        self::$DB->exec($sql);
+        $this->DB->exec($sql);
 
         // then delete base row
         $sql = "DELETE FROM textcat_base WHERE tc_id = '".\filter_var($iID, FILTER_SANITIZE_NUMBER_INT)."'";
-        self::$DB->exec($sql);
+        $this->DB->exec($sql);
 
         return true;
     }
