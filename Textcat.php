@@ -144,7 +144,7 @@ class Textcat
      * @param $sText
      */
     public function saveText($iLID, $sText) {
-        if ($this->purifier != NULL) {
+        if (!empty($this->purifier)) {
             $sText = $this->purifier->purify($sText);
         }
         $aData = array(
