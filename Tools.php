@@ -50,7 +50,7 @@ class Tools
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $randomString = '';
         for ($i = 0; $i < $length; $i++) {
-            $randomString .= $characters[\rand(0, \strlen($characters) - 1)];
+            $randomString .= $characters[rand(0, strlen($characters) - 1)];
         }
         return $randomString;
     }
@@ -62,15 +62,15 @@ class Tools
      * @param bool $bMakeAmpersandHTMLEntity
      * @return string
      */
-    public static function makeLinkHRefWithAddedGetVars($sHRef, $aGetvarstoadd = array(), $bUseGetVarsFromSuppliedHRef = false, $bMakeAmpersandHTMLEntity = true)
+    public static function makeLinkHRefWithAddedGetVars($sHRef, $aGetvarstoadd = [], $bUseGetVarsFromSuppliedHRef = false, $bMakeAmpersandHTMLEntity = true)
     {
         if ($bUseGetVarsFromSuppliedHRef) {
-            $aHRef = \parse_url($sHRef);
+            $aHRef = parse_url($sHRef);
             if (isset($aHRef["query"])) {
-                $aHRef["query"] = \str_replace('&amp;', '&', $aHRef["query"]);
-                $aQuery = \explode('&', $aHRef["query"]);
+                $aHRef["query"] = str_replace('&amp;', '&', $aHRef["query"]);
+                $aQuery = explode('&', $aHRef["query"]);
                 foreach ($aQuery as $sValue) {
-                    $aGetvarsraw = \explode('=', $sValue);
+                    $aGetvarsraw = explode('=', $sValue);
                     $aGetvars[$aGetvarsraw[0]] = $aGetvarsraw[1];
                 }
             }
@@ -89,7 +89,7 @@ class Tools
             }
         } else {
             $return = $sHRef;
-            if (isset($_GET) && \count($_GET)) {
+            if (isset($_GET) && count($_GET)) {
                 $aGetvars = $_GET;
             }
         }
@@ -110,9 +110,9 @@ class Tools
                 $return .= $sKey . '=' . $sValue;
             }
         }
-        if (isset($aGetvars) && \count($aGetvars)) {
+        if (isset($aGetvars) && count($aGetvars)) {
             foreach ($aGetvars as $sKey => $sValue) {
-                if (\array_key_exists($sKey, $aGetvarstoadd)) {
+                if (array_key_exists($sKey, $aGetvarstoadd)) {
                     continue;
                 }
                 if ($bFirstGetVar) {
@@ -140,7 +140,7 @@ class Tools
      */
     public static function calculateImagesizeToBox($sImage, $iBoxWidth, $iBoxHeight)
     {
-        $aImagedata = \GetImageSize($sImage);
+        $aImagedata = getimagesize($sImage);
 
         if ($aImagedata[0] > $iBoxWidth && $aImagedata[1] > $iBoxHeight) {
             $iWidth = $iBoxWidth;
@@ -161,12 +161,12 @@ class Tools
             $iHeight = $aImagedata[1];
         }
 
-        $aData = array(
+        $aData = [
             'width' => $aImagedata[0],
             'height' => $aImagedata[1],
-            'newwidth' => \round($iWidth),
-            'newheight' => \round($iHeight),
-        );
+            'newwidth' => round($iWidth),
+            'newheight' => round($iHeight),
+        ];
 
         if ($aData["width"] != $aData["newwidth"]) {
             $aData["resize"] = true;
@@ -187,32 +187,32 @@ class Tools
      */
     public static function resizeImage($sImage, $sNewimage, $iNewwidth, $iNewheight, $sJPGquality = 75)
     {
-        $aImagedata = \GetImageSize($sImage);
+        $aImagedata = getimagesize($sImage);
 
         if ($aImagedata[2] == 1) { // gif
-            $img_old = \imagecreatefromgif($sImage);
-            $img_new = \imagecreate($iNewwidth, $iNewheight);
-            \imagecopyresampled($img_new, $img_old, 0, 0, 0, 0, $iNewwidth, $iNewheight, $aImagedata[0], $aImagedata[1]);
-            \imagedestroy($img_old);
-            \imagegif($img_new, $sNewimage);
-            \imagedestroy($img_new);
+            $img_old = imagecreatefromgif($sImage);
+            $img_new = imagecreate($iNewwidth, $iNewheight);
+            imagecopyresampled($img_new, $img_old, 0, 0, 0, 0, $iNewwidth, $iNewheight, $aImagedata[0], $aImagedata[1]);
+            imagedestroy($img_old);
+            imagegif($img_new, $sNewimage);
+            imagedestroy($img_new);
         } elseif ($aImagedata[2] == 2) { // jpg
-            $img_old = \imagecreatefromjpeg($sImage);
-            $img_new = \imagecreatetruecolor($iNewwidth, $iNewheight);
-            \imagecopyresampled($img_new, $img_old, 0, 0, 0, 0, $iNewwidth, $iNewheight, $aImagedata[0], $aImagedata[1]);
-            \imagedestroy($img_old);
-            \imagejpeg($img_new, $sNewimage, $sJPGquality);
-            \imagedestroy($img_new);
+            $img_old = imagecreatefromjpeg($sImage);
+            $img_new = imagecreatetruecolor($iNewwidth, $iNewheight);
+            imagecopyresampled($img_new, $img_old, 0, 0, 0, 0, $iNewwidth, $iNewheight, $aImagedata[0], $aImagedata[1]);
+            imagedestroy($img_old);
+            imagejpeg($img_new, $sNewimage, $sJPGquality);
+            imagedestroy($img_new);
         } elseif ($aImagedata[2] == 3) { // png
-            $img_old = \imagecreatefrompng($sImage);
-            $img_new = \imagecreatetruecolor($iNewwidth, $iNewheight);
-            \imagecopyresampled($img_new, $img_old, 0, 0, 0, 0, $iNewwidth, $iNewheight, $aImagedata[0], $aImagedata[1]);
-            \imagedestroy($img_old);
-            \imagepng($img_new, $sNewimage);
-            \imagedestroy($img_new);
+            $img_old = imagecreatefrompng($sImage);
+            $img_new = imagecreatetruecolor($iNewwidth, $iNewheight);
+            imagecopyresampled($img_new, $img_old, 0, 0, 0, 0, $iNewwidth, $iNewheight, $aImagedata[0], $aImagedata[1]);
+            imagedestroy($img_old);
+            imagepng($img_new, $sNewimage);
+            imagedestroy($img_new);
         }
 
-        return \file_exists($sNewimage);
+        return file_exists($sNewimage);
     }
 
     /**
@@ -262,28 +262,28 @@ class Tools
      * @param array $nodes
      * @return array
      */
-    public static function array_search_recursive($needle, $haystack, $nodes = array())
+    public static function array_search_recursive($needle, $haystack, $nodes = [])
     {
         foreach ($haystack as $key1 => $value1) {
-            if (\is_array($value1)) {
+            if (is_array($value1)) {
                 $nodes = self::array_search_recursive($needle, $value1, $nodes);
             } elseif ($key1 == $needle || $value1 == $needle) {
-                $nodes[] = array($key1 => $value1);
+                $nodes[] = [$key1 => $value1];
             }
         }
         return $nodes;
     }
 
     /**
-     * @param $string
-     * @param string $length
+     * @param string $string
+     * @param int $length
      * @return string
      */
-    public static function cutString($string, $length = "35")
+    public static function cutString($string, $length = 35)
     {
-        if (\mb_strlen($string) > $length + 3) {
-            $string = \mb_substr($string, 0, $length);
-            $string = \trim($string) . "...";
+        if (mb_strlen($string) > $length + 3) {
+            $string = mb_substr($string, 0, $length);
+            $string = trim($string) . "...";
         }
         return $string;
     }
@@ -295,7 +295,7 @@ class Tools
      */
     public static function cutStringend($sString, $iLength)
     {
-        return \mb_substr($sString, 0, \mb_strlen($sString) - $iLength);
+        return mb_substr($sString, 0, mb_strlen($sString) - $iLength);
     }
 
     /**
@@ -318,7 +318,7 @@ class Tools
      */
     public static function getCheckboxaval($sKey, $sBoxvalue)
     {
-        return isset($_REQUEST[$sKey]) && \array_search($sBoxvalue, $_REQUEST[$sKey]) !== false ? true : false;
+        return isset($_REQUEST[$sKey]) && array_search($sBoxvalue, $_REQUEST[$sKey]) !== false ? true : false;
     }
 
     // Expects list of options, one option per line
@@ -328,8 +328,8 @@ class Tools
      */
     public static function makeOptionsArrayFromString($sString)
     {
-        $sString = \str_replace("\r", "", $sString);
-        $aOptions = \explode("\n", $sString);
+        $sString = str_replace("\r", "", $sString);
+        $aOptions = explode("\n", $sString);
         return $aOptions;
     }
 
@@ -341,11 +341,12 @@ class Tools
     public static function getOptionname($aOptions, $sSelected)
     {
         foreach ($aOptions as $sValue) {
-            $aTMP = \explode('|', $sValue);
+            $aTMP = explode('|', $sValue);
             if ($aTMP[0] == $sSelected) {
                 return $aTMP[1];
             }
         }
+        return false;
     }
 
     /**

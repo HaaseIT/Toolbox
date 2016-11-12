@@ -23,7 +23,7 @@ class DBTools
         $sValues = '';
         foreach ($aData as $sKey => $sValue) {
             $sFields .= $sKey . ", ";
-            $sValues .= "'".\filter_var($sValue, FILTER_SANITIZE_MAGIC_QUOTES) . "', ";
+            $sValues .= "'".filter_var($sValue, FILTER_SANITIZE_MAGIC_QUOTES) . "', ";
         }
         $sql = "INSERT INTO " . $sTable . " (" . Tools::cutStringend($sFields, 2) . ") ";
         $sql .= "VALUES (" . Tools::cutStringend($sValues, 2) . ")";
@@ -58,13 +58,13 @@ class DBTools
     {
         $sql = "UPDATE " . $sTable . " SET ";
         foreach ($aData as $sKey => $sValue) {
-            $sql .= $sKey . " = '" . \filter_var($sValue, FILTER_SANITIZE_MAGIC_QUOTES) . "', ";
+            $sql .= $sKey . " = '" . filter_var($sValue, FILTER_SANITIZE_MAGIC_QUOTES) . "', ";
         }
         $sql = Tools::cutStringend($sql, 2);
         if ($sPKey == '') {
             $sql .= ' ';
         } else {
-            $sql .= " WHERE " . $sPKey . " = '" . \filter_var($sPValue, FILTER_SANITIZE_MAGIC_QUOTES) . "'";
+            $sql .= " WHERE " . $sPKey . " = '" . filter_var($sPValue, FILTER_SANITIZE_MAGIC_QUOTES) . "'";
         }
         return $sql;
     }

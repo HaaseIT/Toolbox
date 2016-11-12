@@ -15,28 +15,12 @@ class Textcat
 
     public function __construct($container, $defaultlang, $verbose = false, $logdir = '')
     {
-        $this->sLang = \filter_var($container['lang'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
-        $this->sDefaultlang = \filter_var($defaultlang, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+        $this->sLang = filter_var($container['lang'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+        $this->sDefaultlang = filter_var($defaultlang, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
         $this->DB = $container['db'];
         $this->bVerbose = $verbose;
         $this->logdir = $logdir;
     }
-
-    /**
-     * @param $DB
-     * @param $sLang
-     * @param $sDefaultlang
-     */
-    /*
-    public static function init($DB, $sLang, $sDefaultlang, $bVerbose = false, $logdir = '') {
-        self::$DB = $DB;
-        self::$bVerbose = $bVerbose;
-        self::$sLang = \filter_var($sLang, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
-        self::$sDefaultlang = \filter_var($sDefaultlang, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
-        self::$logdir = $logdir;
-        self::loadTextcats();
-    }
-    */
 
     /**
      *
@@ -72,7 +56,7 @@ class Textcat
         $sql = "SELECT * FROM textcat_base LEFT JOIN textcat_lang ON textcat_base.tc_id = textcat_lang.tcl_tcid ";
         $sql .= "&& tcl_lang = :lang WHERE tc_id = :id";
         $hResult = $this->DB->prepare($sql);
-        $hResult->bindValue(':id', \filter_var($iID, FILTER_SANITIZE_NUMBER_INT));
+        $hResult->bindValue(':id', filter_var($iID, FILTER_SANITIZE_NUMBER_INT));
         $hResult->bindValue(':lang', $this->sLang);
         $hResult->execute();
 
@@ -87,14 +71,14 @@ class Textcat
     public function T($sTextkey, $bReturnFalseIfNotAvailable = false)
     {
         $return = '';
-        $sTextkey = \filter_var($sTextkey, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+        $sTextkey = filter_var($sTextkey, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
         if (isset($_GET["showtextkeys"])) {
             $return = '['.$sTextkey.']';
         } else {
-            if (!empty($this->T[$this->sLang][$sTextkey]["tcl_text"]) && \trim($this->T[$this->sLang][$sTextkey]["tcl_text"]) != '') {
-                $return = \trim($this->T[$this->sLang][$sTextkey]["tcl_text"]);
-            } elseif (!empty($this->T[$this->sDefaultlang][$sTextkey]["tcl_text"]) && \trim($this->T[$this->sDefaultlang][$sTextkey]["tcl_text"]) != '') {
-                $return = \trim($this->T[$this->sDefaultlang][$sTextkey]["tcl_text"]);
+            if (!empty($this->T[$this->sLang][$sTextkey]["tcl_text"]) && trim($this->T[$this->sLang][$sTextkey]["tcl_text"]) != '') {
+                $return = trim($this->T[$this->sLang][$sTextkey]["tcl_text"]);
+            } elseif (!empty($this->T[$this->sDefaultlang][$sTextkey]["tcl_text"]) && trim($this->T[$this->sDefaultlang][$sTextkey]["tcl_text"]) != '') {
+                $return = trim($this->T[$this->sDefaultlang][$sTextkey]["tcl_text"]);
             }
             if (!isset($return) || $return == '') {
                 if ($this->logdir != '' && is_dir($this->logdir) && is_writable($this->logdir)) {
@@ -124,16 +108,16 @@ class Textcat
         // Check if this textkey already has a child in the language table, if not, insert one
         $sql = "SELECT * FROM textcat_lang WHERE tcl_tcid = :id AND tcl_lang = :lang";
         $hResult = $this->DB->prepare($sql);
-        $iID = \filter_var($iID, FILTER_SANITIZE_NUMBER_INT);
+        $iID = filter_var($iID, FILTER_SANITIZE_NUMBER_INT);
         $hResult->bindValue(':id', $iID);
         $hResult->bindValue(':lang', $this->sLang);
         $hResult->execute();
 
         if ($hResult->rowCount() == 0) {
-            $aData = array(
+            $aData = [
                 'tcl_tcid' => $iID,
                 'tcl_lang' => $this->sLang
-            );
+            ];
             $sql = \HaaseIT\DBTools::buildPSInsertQuery($aData, 'textcat_lang');
             $hResult = $this->DB->prepare($sql);
             foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
@@ -149,10 +133,10 @@ class Textcat
         if (!empty($this->purifier)) {
             $sText = $this->purifier->purify($sText);
         }
-        $aData = array(
-            'tcl_id' => \filter_var($iLID, FILTER_SANITIZE_NUMBER_INT),
+        $aData = [
+            'tcl_id' => filter_var($iLID, FILTER_SANITIZE_NUMBER_INT),
             'tcl_text' => $sText,
-        );
+        ];
         $sql = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'textcat_lang', 'tcl_id');
         $hResult = $this->DB->prepare($sql);
         foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
@@ -164,16 +148,16 @@ class Textcat
      * @return array
      */
     public function verifyAddTextKey($sKey) {
-        $aErr = array();
-        $sKey = \filter_var(trim($sKey), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
-        if (\strlen($sKey) < 3) {
+        $aErr = [];
+        $sKey = filter_var(trim($sKey), FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+        if (strlen($sKey) < 3) {
             $aErr["keytooshort"] = true;
-        } elseif (\strlen($sKey) > 64) {
+        } elseif (strlen($sKey) > 64) {
             $aErr["keytoolong"] = true;
-        } elseif (\preg_match("/^[a-zA-Z0-9_]*$/", $sKey) != 1) {
+        } elseif (preg_match("/^[a-zA-Z0-9_]*$/", $sKey) != 1) {
             $aErr["invalidcharacter"] = true;
         }
-        if (\count($aErr) == 0) {
+        if (count($aErr) == 0) {
             $sql = "SELECT tc_key FROM textcat_base WHERE tc_key = :key";
             $hResult = $this->DB->prepare($sql);
             $hResult->bindValue(':key', $sKey);
@@ -190,7 +174,7 @@ class Textcat
      * @return mixed
      */
     public function addTextKey($sKey) {
-        $aData = array('tc_key' => \trim(\filter_var($sKey, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),);
+        $aData = ['tc_key' => trim(filter_var($sKey, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),];
         $sql = \HaaseIT\DBTools::buildInsertQuery($aData, 'textcat_base');
         $this->DB->exec($sql);
         $iId = $this->DB->lastInsertId();
@@ -200,11 +184,11 @@ class Textcat
 
     public function deleteText($iID) {
         // delete children
-        $sql = "DELETE FROM textcat_lang WHERE tcl_tcid = '".\filter_var($iID, FILTER_SANITIZE_NUMBER_INT)."'";
+        $sql = "DELETE FROM textcat_lang WHERE tcl_tcid = '".filter_var($iID, FILTER_SANITIZE_NUMBER_INT)."'";
         $this->DB->exec($sql);
 
         // then delete base row
-        $sql = "DELETE FROM textcat_base WHERE tc_id = '".\filter_var($iID, FILTER_SANITIZE_NUMBER_INT)."'";
+        $sql = "DELETE FROM textcat_base WHERE tc_id = '".filter_var($iID, FILTER_SANITIZE_NUMBER_INT)."'";
         $this->DB->exec($sql);
 
         return true;
