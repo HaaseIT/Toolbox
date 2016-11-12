@@ -98,7 +98,9 @@ class Textcat
             }
             if (!isset($return) || $return == '') {
                 if ($this->logdir != '' && is_dir($this->logdir) && is_writable($this->logdir)) {
-                    error_log(date('c').' Missing Text: '.$sTextkey.PHP_EOL, 3, $this->logdir.DIRECTORY_SEPARATOR.'errors_textcats.log');
+                    if (function_exists('error_log')) {
+                        error_log(date('c').' Missing Text: '.$sTextkey.PHP_EOL, 3, $this->logdir.DIRECTORY_SEPARATOR.'errors_textcats.log');
+                    }
                 }
                 if ($bReturnFalseIfNotAvailable) return false;
                 elseif ($this->bVerbose) $return = 'Missing Text: '.$sTextkey;
