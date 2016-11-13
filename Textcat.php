@@ -13,11 +13,11 @@ class Textcat
     protected $T, $sLang, $sDefaultlang, $DB, $bVerbose, $logdir;
     public $purifier;
 
-    public function __construct($container, $defaultlang, $verbose = false, $logdir = '')
+    public function __construct($lang, $db, $defaultlang, $verbose = false, $logdir = '')
     {
-        $this->sLang = filter_var($container['lang'], FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
+        $this->sLang = filter_var($lang, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
         $this->sDefaultlang = filter_var($defaultlang, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
-        $this->DB = $container['db'];
+        $this->DB = $db;
         $this->bVerbose = $verbose;
         $this->logdir = $logdir;
     }
