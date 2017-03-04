@@ -40,13 +40,17 @@
                                     {{ value.title }}</a>
                             {% endif %}
                         {% else %}
-                            {% if value.escapehtmlspecialchars %}{% autoescape %}{% endif %}
                             {% if value.callback is defined %}
-                                {{ value.callback(row[value.key]) }}
+                                {{ callback(value.callback, row[value.key]) }}
                             {% else %}
-                                {{ row[value.key] }}
+                                {% if value.escapehtmlspecialchars %}
+                                    {% autoescape %}
+                                        {{ row[value.key] }}
+                                    {% endautoescape %}
+                                {% else %}
+                                    {{ row[value.key] }}
+                                {% endif %}
                             {% endif %}
-                            {% if value.escapehtmlspecialchars %}{% endautoescape %}{% endif %}
                         {% endif %}
                     </td>
                 {% endfor %}
@@ -58,4 +62,3 @@
 {% else %}
     <span style="background:red;color:white;font-weight:bold;padding:2px;">makeListtable() -> The configuration array is empty (first argument of the function call).</span>
 {% endif %}
-
