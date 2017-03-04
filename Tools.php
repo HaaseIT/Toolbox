@@ -6,7 +6,7 @@
     Licensed unter LGPL v3
  */
 
-namespace HaaseIT;
+namespace HaaseIT\Toolbox;
 
 class Tools
 {
@@ -50,7 +50,7 @@ class Tools
         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $randomString = '';
         for ($i = 0; $i < $length; $i++) {
-            $randomString .= $characters[rand(0, strlen($characters) - 1)];
+            $randomString .= $characters[mt_rand(0, strlen($characters) - 1)];
         }
         return $randomString;
     }
@@ -329,8 +329,7 @@ class Tools
     public static function makeOptionsArrayFromString($sString)
     {
         $sString = str_replace("\r", "", $sString);
-        $aOptions = explode("\n", $sString);
-        return $aOptions;
+        return explode("\n", $sString);
     }
 
     /**
@@ -378,10 +377,13 @@ class Tools
      * @param $twig
      * @return mixed
      */
-    public static function makeListtable($aC, $aData, $twig)
+    public static function makeListtable($aC, $aData, \Twig_Environment $twig)
     {
-        // v 1.5
+        // v 1.6
         /*
+        Changes in 1.6 2016-03-04:
+        added the possibility to use a callback for columns
+        
         Changes in 1.5 2014-12-21:
         moved function to class Tools
         changed function to use twig template
@@ -418,25 +420,25 @@ class Tools
 
         Expected config data (arg: $aC)
         $aListSetting = array(
-        array('title' => 'Kd Nr.', 'key' => 'adk_nummer', 'width' => 150, 'linked' => false,),
+        array('title' => 'Kd Nr.', 'key' => 'adk_nummer', 'width' => 150, 'linked' => false, 'callback' => 'callbackname'),
         array(
-        'title' => 'Vorg. Nummer',
-        'key' => 'vk_nummer',
-        'width' => 150,
-        'linked' => false,
-        'escapehtmlspecialchars' => false,
-        'styledata' => 'text-align: center;',
-        'stylehead' => 'text-align: center;',
+            'title' => 'Vorg. Nummer',
+            'key' => 'vk_nummer',
+            'width' => 150,
+            'linked' => false,
+            'escapehtmlspecialchars' => false,
+            'styledata' => 'text-align: center;',
+            'stylehead' => 'text-align: center;',
         ),
         array(
-        'title' => 'löschen',
-        'key' => 'vk_wv_nummer',
-        'width' => 60,
-        'linked' => true,
-        'ltarget' => '/link/target.php',
-        'lkeyname' => 'id',
-        'lgetvars' => array(
-        'action' => 'delete',
+            'title' => 'löschen',
+            'key' => 'vk_wv_nummer',
+            'width' => 60,
+            'linked' => true,
+            'ltarget' => '/link/target.php',
+            'lkeyname' => 'id',
+            'lgetvars' => array(
+            'action' => 'delete',
         ),
         'levents' => 'onClick="return confirm(\'Wirklich löschen?\');"',
         ),

@@ -40,11 +40,13 @@
                                     {{ value.title }}</a>
                             {% endif %}
                         {% else %}
-                            {% if value.escapehtmlspecialchars %}
-                                {% autoescape %}{{ row[value.key] }}{% endautoescape %}
+                            {% if value.escapehtmlspecialchars %}{% autoescape %}{% endif %}
+                            {% if value.callback is defined %}
+                                {{ value.callback(row[value.key]) }}
                             {% else %}
                                 {{ row[value.key] }}
                             {% endif %}
+                            {% if value.escapehtmlspecialchars %}{% endautoescape %}{% endif %}
                         {% endif %}
                     </td>
                 {% endfor %}

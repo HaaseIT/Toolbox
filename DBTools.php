@@ -6,7 +6,7 @@
     Licensed unter LGPL v3
  */
 
-namespace HaaseIT;
+namespace HaaseIT\Toolbox;
 
 class DBTools
 {
@@ -25,9 +25,8 @@ class DBTools
             $sFields .= $sKey . ", ";
             $sValues .= "'".filter_var($sValue, FILTER_SANITIZE_MAGIC_QUOTES) . "', ";
         }
-        $sql = "INSERT INTO " . $sTable . " (" . Tools::cutStringend($sFields, 2) . ") ";
-        $sql .= "VALUES (" . Tools::cutStringend($sValues, 2) . ")";
-        return $sql;
+
+        return 'INSERT INTO '.$sTable.' ('.Tools::cutStringend($sFields, 2).') VALUES ('.Tools::cutStringend($sValues, 2).')';
     }
 
     /**
@@ -54,7 +53,7 @@ class DBTools
      * @param bool $bKeepAT
      * @return string
      */
-    public static function buildUpdateQuery($aData, $sTable, $sPKey = '', $sPValue = '', $bKeepAT = false)
+    public static function buildUpdateQuery($aData, $sTable, $sPKey = '', $sPValue = '')
     {
         $sql = "UPDATE " . $sTable . " SET ";
         foreach ($aData as $sKey => $sValue) {

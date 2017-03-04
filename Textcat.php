@@ -6,14 +6,14 @@
     Licensed unter LGPL v3
  */
 
-namespace HaaseIT;
+namespace HaaseIT\Toolbox;
 
 class Textcat
 {
     protected $T, $sLang, $sDefaultlang, $DB, $bVerbose, $logdir;
     public $purifier;
 
-    public function __construct($lang, $db, $defaultlang, $verbose = false, $logdir = '')
+    public function __construct($lang, \PDO $db, $defaultlang, $verbose = false, $logdir = '')
     {
         $this->sLang = filter_var($lang, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
         $this->sDefaultlang = filter_var($defaultlang, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW);
@@ -40,7 +40,9 @@ class Textcat
             $hResult = $this->DB->prepare($sql);
             $hResult->bindValue(':lang', $this->sDefaultlang, \PDO::PARAM_STR);
             $hResult->execute();
-            while ($aRow = $hResult->fetch(\PDO::FETCH_ASSOC)) $aTextcat[$this->sDefaultlang][$aRow["tc_key"]] = $aRow;
+            while ($aRow = $hResult->fetch(\PDO::FETCH_ASSOC)) {
+                $aTextcat[$this->sDefaultlang][$aRow["tc_key"]] = $aRow;
+            }
         }
 
         if (isset($aTextcat)) {
@@ -81,13 +83,14 @@ class Textcat
                 $return = trim($this->T[$this->sDefaultlang][$sTextkey]["tcl_text"]);
             }
             if (!isset($return) || $return == '') {
-                if ($this->logdir != '' && is_dir($this->logdir) && is_writable($this->logdir)) {
-                    if (function_exists('error_log')) {
-                        error_log(date('c').' Missing Text: '.$sTextkey.PHP_EOL, 3, $this->logdir.DIRECTORY_SEPARATOR.'errors_textcats.log');
-                    }
+                if ($this->logdir != '' && is_dir($this->logdir) && is_writable($this->logdir) && function_exists('error_log')) {
+                    error_log(date('c').' Missing Text: '.$sTextkey.PHP_EOL, 3, $this->logdir.DIRECTORY_SEPARATOR.'errors_textcats.log');
                 }
-                if ($bReturnFalseIfNotAvailable) return false;
-                elseif ($this->bVerbose) $return = 'Missing Text: '.$sTextkey;
+                if ($bReturnFalseIfNotAvailable) {
+                    return false;
+                } elseif ($this->bVerbose) {
+                    $return = 'Missing Text: '.$sTextkey;
+                }
             }
         }
 
@@ -118,7 +121,7 @@ class Textcat
                 'tcl_tcid' => $iID,
                 'tcl_lang' => $this->sLang
             ];
-            $sql = \HaaseIT\DBTools::buildPSInsertQuery($aData, 'textcat_lang');
+            $sql = \HaaseIT\Toolbox\DBTools::buildPSInsertQuery($aData, 'textcat_lang');
             $hResult = $this->DB->prepare($sql);
             foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
             $hResult->execute();
@@ -137,9 +140,11 @@ class Textcat
             'tcl_id' => filter_var($iLID, FILTER_SANITIZE_NUMBER_INT),
             'tcl_text' => $sText,
         ];
-        $sql = \HaaseIT\DBTools::buildPSUpdateQuery($aData, 'textcat_lang', 'tcl_id');
+        $sql = \HaaseIT\Toolbox\DBTools::buildPSUpdateQuery($aData, 'textcat_lang', 'tcl_id');
         $hResult = $this->DB->prepare($sql);
-        foreach ($aData as $sKey => $sValue) $hResult->bindValue(':'.$sKey, $sValue);
+        foreach ($aData as $sKey => $sValue) {
+            $hResult->bindValue(':'.$sKey, $sValue);
+        }
         $hResult->execute();
     }
 
@@ -163,7 +168,9 @@ class Textcat
             $hResult->bindValue(':key', $sKey);
             $hResult->execute();
             $iRows = $hResult->rowCount();
-            if ($iRows > 0) $aErr["keyalreadyexists"] = true;
+            if ($iRows > 0) {
+                $aErr["keyalreadyexists"] = true;
+            }
         }
 
         return $aErr;
@@ -175,11 +182,10 @@ class Textcat
      */
     public function addTextKey($sKey) {
         $aData = ['tc_key' => trim(filter_var($sKey, FILTER_SANITIZE_STRING, FILTER_FLAG_STRIP_LOW)),];
-        $sql = \HaaseIT\DBTools::buildInsertQuery($aData, 'textcat_base');
+        $sql = \HaaseIT\Toolbox\DBTools::buildInsertQuery($aData, 'textcat_base');
         $this->DB->exec($sql);
-        $iId = $this->DB->lastInsertId();
 
-        return $iId;
+        return $this->DB->lastInsertId();
     }
 
     public function deleteText($iID) {
