@@ -356,17 +356,20 @@ class Tools
      */
     public static function getFormfield($sKey, $sDefault = '', $bEmptyisvalid = false)
     {
-        if (isset($_REQUEST[$sKey])) {
-            if ($bEmptyisvalid && $_REQUEST[$sKey] == '') {
-                return '';
-            } elseif ($_REQUEST[$sKey] != '') {
-                return htmlentities($_REQUEST[$sKey]);
-            } else {
-                return $sDefault;
-            }
-        } else {
-            return $sDefault;
+        $field = filter_input(INPUT_POST, $sKey, FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW);
+        if ($field === null || $field === false) {
+            $field = filter_input(INPUT_GET, $sKey, FILTER_UNSAFE_RAW, FILTER_FLAG_STRIP_LOW);
         }
+
+        if ($field !== null && $field !== false) {
+            if ($bEmptyisvalid && $field === '') {
+                return '';
+            } elseif (!empty($field)) {
+                return htmlentities($field);
+            }
+        }
+
+        return $sDefault;
     }
 
     protected static $COUNTER_makeListtable;
