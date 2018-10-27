@@ -463,4 +463,15 @@ class Tools
 
         return $twig->render('listtable.twig', $aLData);
     }
+
+    /**
+     * @param string $string
+     * @param array $weekdays
+     * @return string
+     */
+    public function replaceWeekdays($string, array $weekdays)
+    {
+        $en = array('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday');
+        return str_replace($en, $weekdays, $string);
+    }
 }
