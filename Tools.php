@@ -469,7 +469,7 @@ class Tools
      * @param array $weekdays
      * @return string
      */
-    public function replaceWeekdays($string, array $weekdays)
+    public static function replaceWeekdays($string, array $weekdays)
     {
         $en = array('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday');
         return str_replace($en, $weekdays, $string);
